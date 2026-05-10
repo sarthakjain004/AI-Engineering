@@ -1,0 +1,8 @@
+# .gitignore file to ignore sensitive information and unnecessary files
+.env
+.env.local
+.env.*.local
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
