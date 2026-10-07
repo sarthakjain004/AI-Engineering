@@ -1,19 +1,16 @@
-# Interactive terminal chatbot for the local Qwen model — WITH conversation memory.
+# Interactive terminal chatbot with conversation memory.
 #
-# Start the server first (separate terminal):
-#   cd "/Users/sarthakjain/Learning/AI Engineering"
-#   HF_HUB_OFFLINE=1 .venv/bin/python -m mlx_lm.server --model mlx-community/Qwen3.6-35B-A3B-6bit --port 8080
-# Then run this:
-#   .venv/bin/python FirstAIApplication/chat.py
+# Assumes local model server is running on http://127.0.0.1:1234
+# Run this with: python FirstAIApplication/chat.py
 #
 # Commands while chatting:  exit / quit  -> leave    |    reset -> wipe memory
 
 from openai import OpenAI
 
-MODEL = "mlx-community/Qwen3.6-35B-A3B-6bit"
+MODEL = "qwen/qwen3.6-35b-a3b"
 CONTEXT_LIMIT = 262_144  # this model's max context window, in tokens
 
-client = OpenAI(api_key="local", base_url="http://localhost:8080/v1")
+client = OpenAI(api_key="local", base_url="http://127.0.0.1:1234/v1")
 
 # THE conversation. We resend this whole list every turn — that's the model's
 # "memory". The API itself remembers nothing between calls.

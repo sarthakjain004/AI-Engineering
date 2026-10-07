@@ -95,3 +95,43 @@ def call_embedding_api(text):
 
 result = call_embedding_api("Hello world")
 print(result)
+
+from functools import wraps
+
+def cache_embeddings(func):
+    cache = {}
+
+    @wraps(func)
+    def wrapper(text, **kwargs):
+        cache_key = (text, tuple(sorted(kwargs.items())))
+        if cache_key not in cache:
+            cache[cache_key] = func(text, **kwargs)
+        return cache[cache_key]
+    wrapper.cache = cache
+    wrapper.cache_clear = lambda: cache.clear()
+    return wrapper
+
+@cache_embeddings
+def embed(text, model="text-embedding-3-small"):
+    print(f"Calling embedding model: {text[:30]}...")
+    return [0.1, 0.2, 0.3]
+
+embed("hello", model="text-embedding-3-small")
+embed("hello", model="text-embedding-3-small")
+embed("hello", model="text-embedding-3-large")
+print(f"Cache size: {len(embed.cache)}")  # 2
+
+failures_left = 2
+
+# bottom to top, first timing wraps then retry. hence timing is for each individual retry now.
+@retry(max_retries=3, delay=1.0, backoff=2.0)
+@timing
+def call_llm(prompt):
+    global failures_left
+    if failures_left > 0:
+        failures_left -= 1
+        raise ConnectionError("API timeout")
+
+    return [0.1, 0.2, 0.3]
+
+call_llm("hello")

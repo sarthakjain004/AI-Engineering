@@ -1,25 +1,18 @@
-# Talk to the LOCAL Qwen3.6-35B-A3B (MLX 6-bit) model — no internet, no API cost.
+# Talk to the LOCAL model server running on port 1234 (OpenAI-compatible API).
 #
-# 1) Start the local server in a separate terminal (serves an OpenAI-compatible API):
-#      cd "/Users/sarthakjain/Learning/AI Engineering"
-#      .venv/bin/python -m mlx_lm.server --model mlx-community/Qwen3.6-35B-A3B-6bit --port 8080
-#
-# 2) Run this file:
-#      .venv/bin/python FirstAIApplication/local_model.py
-#
-# Same OpenAI client as the rest of the project — only base_url changes.
+# The server should already be running and ready at http://127.0.0.1:1234
+# No API key needed — using local inference.
 
 from openai import OpenAI
 
-# A local server needs no real key; any non-empty string is accepted.
 client = OpenAI(
     api_key="local",
-    base_url="http://localhost:8080/v1",
+    base_url="http://127.0.0.1:1234/v1",
 )
 
 response = client.chat.completions.create(
-    model="mlx-community/Qwen3.6-35B-A3B-6bit",
-    max_tokens=500,  # explicit cap, per project convention
+    model="qwen/qwen3.6-35b-a3b",
+    max_tokens=1500,  # thinking model: reasoning tokens count toward the cap
     messages=[
         {"role": "system", "content": "You are a helpful local assistant. Be concise."},
         {"role": "user", "content": "In one sentence, what is mixture-of-experts in an LLM?"},
